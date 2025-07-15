@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marco Alessio Epicoco - Frontend Developer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            overflow-x: hidden;
+            cursor: none;
+        }
+        
+        .custom-cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            background: #00ff88;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: difference;
+            transition: none;
+            will-change: transform;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .skill-card {
+            background: linear-gradient(145deg, #1e1e1e, #2a2a2a);
+            border: 1px solid #333;
+            transition: all 0.3s ease;
+        }
+        
+        .skill-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.3);
+            border-color: #00ff88;
+        }
+        
+        .project-card {
+            background: linear-gradient(145deg, #1a1a1a, #2d2d2d);
+            border: 1px solid #333;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .project-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 136, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .project-card:hover::before {
+            left: 100%;
+        }
+        
+        .project-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 15px 40px rgba(0, 255, 136, 0.2);
+        }
+        
+        .floating-element {
+            animation: float 6s ease-in-out infinite;
+            margin-top: 120px; /* Aggiunto margine per evitare sovrapposizione con navbar */
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .text-gradient {
+            background: linear-gradient(45deg, #00ff88, #00d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #00ff88;
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .section-divider {
+            width: 100px;
+            height: 2px;
+            background: linear-gradient(90deg, #00ff88, #00d4ff);
+            margin: 2rem auto;
+        }
+        
+        .business-info {
+            background: linear-gradient(145deg, #1a2332, #2d3b52);
+            border: 1px solid #3b4f68;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .business-info::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #00ff88, #00d4ff);
+        }
+        
+        .business-badge {
+            display: inline-flex;
+            align-items: center;
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid #00ff88;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin: 4px;
+        }
+        
+        @media (max-width: 768px) {
+            .custom-cursor {
+                display: none;
+            }
+            
+            body {
+                cursor: default;
+            }
+            
+            .floating-element {
+                margin-top: 80px; /* Margine ridotto per mobile */
+            }
+        }
+        
+        .theme-toggle {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+        
+        /* Light theme migliorato */
+        .light-theme {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            color: #1a202c;
+        }
+        
+        .light-theme .glass-effect {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        .light-theme .skill-card,
+        .light-theme .project-card {
+            background: linear-gradient(145deg, #ffffff, #f1f5f9);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            color: #1a202c;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .light-theme .skill-card:hover,
+        .light-theme .project-card:hover {
+            box-shadow: 0 15px 40px rgba(0, 255, 136, 0.15);
+            border-color: #00ff88;
+        }
+        
+        .light-theme nav {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .light-theme .nav-link {
+            color: #2d3748;
+        }
+        
+        .light-theme .theme-toggle {
+            background: rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(0, 0, 0, 0.2);
+        }
+        
+        .light-theme .theme-toggle:hover {
+            background: rgba(0, 0, 0, 0.2);
+        }
+        
+        .light-theme footer {
+            border-top-color: rgba(0, 0, 0, 0.1);
+        }
+        
+        .light-theme .floating-element img {
+            border-color: rgba(0, 0, 0, 0.2);
+        }
+        
+        .light-theme .business-info {
+            background: linear-gradient(145deg, #f8faff, #e8f2ff);
+            border: 1px solid rgba(0, 123, 255, 0.2);
+            color: #1a202c;
+        }
+        
+        .light-theme .business-badge {
+            background: rgba(0, 123, 255, 0.1);
+            border: 1px solid #007bff;
+            color: #0056b3;
+        }
+        
+        /* Form styles for light theme */
+        .light-theme form input,
+        .light-theme form textarea {
+            background: rgba(255, 255, 255, 0.9) !important;
+            border: 2px solid rgba(0, 0, 0, 0.2) !important;
+            color: #1a202c !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+        }
+        
+        .light-theme form input:focus,
+        .light-theme form textarea:focus {
+            border-color: #007bff !important;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15), 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+            background: rgba(255, 255, 255, 1) !important;
+        }
+        
+        .light-theme form input::placeholder,
+        .light-theme form textarea::placeholder {
+            color: rgba(0, 0, 0, 0.4) !important;
+        }
+        
+        .light-theme form label {
+            color: #2d3748 !important;
+            font-weight: 600 !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Custom Cursor -->
+    <div class="custom-cursor"></div>
+    
+    <!-- Theme Toggle -->
+    <div class="theme-toggle" id="themeToggle">
+        <i class="fas fa-moon"></i>
+    </div>
+    
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 glass-effect">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="text-2xl font-bold text-gradient">ME</div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#hero" class="nav-link">Home</a>
+                    <a href="#about" class="nav-link">About</a>
+                    <a href="#skills" class="nav-link">Skills</a>
+                    <a href="#projects" class="nav-link">Projects</a>
+                    <a href="#contact" class="nav-link">Contact</a>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobileMenuToggle" class="text-white">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- 1. HERO SECTION -->
+    <section id="hero" class="min-h-screen pb-20 flex items-center justify-center relative overflow-hidden">
+        <div class="absolute inset-0 gradient-bg opacity-20"></div>
+        <div class="container mx-auto px-6 text-center z-10">
+            <div class="floating-element">
+                <img src="/assets/images/logo-profilo.png" alt="Marco Epicoco" class="w-32 h-32 rounded-full mx-auto mb-8 border-4 border-white/20">
+            </div>
+            <h1 class="text-6xl md:text-8xl font-black mb-4" id="heroTitle">
+                <span class="text-gradient">Dott. Marco</span><br>
+                <span class="text-white">Epicoco</span>
+            </h1>
+            <p class="text-xl md:text-2xl mb-8" id="heroSubtitle">
+                Full Stack Developer · Legal-Tech Consultant
+            </p>
+            <p class="text-lg mb-8 text-white-300 max-w-4xl mx-auto" id="heroDescription">
+                Bridging the gap between law, coding, and blockchain innovation. I specialize in scalable digital transformation strategies, AI integrations, and compliance for tech-driven businesses.
+            </p>
+            <div class="flex justify-center space-x-4" id="heroStats">
+                <div class="glass-effect rounded-lg p-4">
+                    <div class="text-2xl font-bold text-gradient">9+</div>
+                    <div class="text-sm">Years Experience</div>
+                </div>
+                <div class="glass-effect rounded-lg p-4">
+                    <div class="text-2xl font-bold text-gradient">4+</div>
+                    <div class="text-sm">Major Projects</div>
+                </div>
+                <div class="glass-effect rounded-lg p-4">
+                    <div class="text-2xl font-bold text-gradient">3</div>
+                    <div class="text-sm">Languages</div>
+                </div>
+            </div>
+            <div class="mt-12 flex justify-center" id="heroButton">
+                <a href="#about" class="inline-flex items-center gap-3 bg-gradient-to-r from-green-400 to-blue-500 text-white px-10 py-4 rounded-full hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl font-semibold text-lg">
+                    <i class="fas fa-rocket"></i>
+                    Discover My Work
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+            <div class="flex flex-col items-center space-y-2">
+            </div>
+        </div>
+    </section>
+
+    <!-- 2. ABOUT SECTION -->
+    <section id="about" class="py-20 relative">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold mb-4">About Me</h2>
+                <div class="section-divider"></div>
+                <p class="text-xl text-gray-400 max-w-4xl mx-auto">
+                    Full Stack Developer and Legal-Tech Consultant with a unique hybrid background in law, coding, and blockchain innovation. 
+                    I help startups and SMEs design secure, automated, and regulation-ready digital products.
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div class="space-y-6">
+                    <div class="glass-effect rounded-lg p-6">
+                        <h3 class="text-2xl font-bold mb-4 text-gradient">Education</h3>
+                        <div class="space-y-4">
+                            <div class="border-l-4 border-green-400 pl-4">
+                                <h4 class="font-bold">Full Stack Developer Bootcamp</h4>
+                                <p class="text-gray-400">Aulab (01/2025-06/2025)</p>
+                                <p class="text-sm text-gray-500">HTML/CSS, Bootstrap, JS, PHP, React, Laravel, Python, REST API, AI integration</p>
+                            </div>
+                            <div class="border-l-4 border-blue-400 pl-4">
+                                <h4 class="font-bold">Master's Degree in Law</h4>
+                                <p class="text-gray-400">Unisalento (09/2017-07/2022)</p>
+                                <p class="text-sm text-gray-500">Focus on Digital Law and Intellectual Property</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="space-y-6">
+                    <div class="glass-effect rounded-lg p-6">
+                        <h3 class="text-2xl font-bold mb-4 text-gradient">Experience</h3>
+                        <div class="space-y-4">
+                            <div class="border-l-4 border-green-400 pl-4">
+                                <h4 class="font-bold">Legal Consultant</h4>
+                                <p class="text-gray-400">Balestra Notary Office (06/2024-12/2024)</p>
+                                <p class="text-sm text-gray-500">Real estate and corporate sector digitization</p>
+                            </div>
+                            <div class="border-l-4 border-blue-400 pl-4">
+                                <h4 class="font-bold">Web Developer</h4>
+                                <p class="text-gray-400">Tre Lune Technologies (09/2022-06/2024)</p>
+                                <p class="text-sm text-gray-500">Digital transformation and e-commerce platforms</p>
+                            </div>
+                            <div class="border-l-4 border-purple-400 pl-4">
+                                <h4 class="font-bold">Treasurer</h4>
+                                <p class="text-gray-400">Bitcoin Foundation Puglia (04/2016-Current)</p>
+                                <p class="text-sm text-gray-500">Blockchain education and regional crypto campaigns</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Languages Section -->
+            <div class="mt-16">
+                <div class="glass-effect rounded-lg p-8">
+                    <h3 class="text-2xl font-bold mb-6 text-center text-gradient">Languages</h3>
+                    <div class="grid md:grid-cols-3 gap-6 text-center">
+                        <div class="p-4">
+                            <div class="text-4xl mb-2">🇮🇹</div>
+                            <h4 class="font-bold">Italian</h4>
+                            <p class="text-gray-400">Native</p>
+                        </div>
+                        <div class="p-4">
+                            <div class="text-4xl mb-2">🇬🇧</div>
+                            <h4 class="font-bold">English</h4>
+                            <p class="text-gray-400">Professional (C1)</p>
+                        </div>
+                        <div class="p-4">
+                            <div class="text-4xl mb-2">🇫🇷</div>
+                            <h4 class="font-bold">French</h4>
+                            <p class="text-gray-400">Intermediate (DELF B2)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. SKILLS SECTION -->
+    <section id="skills" class="py-20 relative">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold mb-4">Skills & Expertise</h2>
+                <div class="section-divider"></div>
+            </div>
+            
+            <!-- Development & Tech -->
+            <div class="mb-16">
+                <h3 class="text-2xl font-bold mb-8 text-center text-gradient">Development & Tech</h3>
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="skill-card rounded-lg p-6 text-center">
+                        <i class="fab fa-html5 text-4xl text-orange-500 mb-4"></i>
+                        <h4 class="text-lg font-bold">HTML5</h4>
+                    </div>
+                    <div class="skill-card rounded-lg p-6 text-center">
+                        <i class="fab fa-css3-alt text-4xl text-blue-500 mb-4"></i>
+                        <h4 class="text-lg font-bold">CSS3</h4>
+                    </div>
+                    <div class="skill-card rounded-lg p-6 text-center">
+                        <i class="fab fa-js-square text-4xl text-yellow-500 mb-4"></i>
+                        <h4 class="text-lg font-bold">JavaScript</h4>
+                    </div>
+                    <div class="skill-card rounded-lg p-6 text-center">
+                        <i class="fab fa-php text-4xl text-indigo-500 mb-4"></i>
+                        <h4 class="text-lg font-bold">PHP</h4>
+                    </div>
+                    <div class="skill-card rounded-lg p-6 text-center">
+                        <i class="fab fa-laravel text-4xl text-red-500 mb-4"></i>
+                        <h4 class="text-lg font-bold">Laravel</h4>
+                    </div>
+                    <div class="skill-card rounded-lg p-6 text-center">
+                        <i class="fas fa-database text-4xl text-green-500 mb-4"></i>
+                        <h4 class="text-lg font-bold">MySQL</h4>
+                    </div>
+                    <div class="skill-card rounded-lg p-6 text-center">
+                        <i class="fab fa-react text-4xl text-cyan-500 mb-4"></i>
+                        <h4 class="text-lg font-bold">React</h4>
+                    </div>
+                    <div class="skill-card rounded-lg p-6 text-center">
+                        <i class="fab fa-python text-4xl text-blue-600 mb-4"></i>
+                        <h4 class="text-lg font-bold">Python</h4>
+                    </div>
+                    <div class="skill-card rounded-lg p-6 text-center">
+                        <i class="fas fa-cogs text-4xl text-gray-400 mb-4"></i>
+                        <h4 class="text-lg font-bold">REST API</h4>
+                    </div>
+                    <div class="skill-card rounded-lg p-6 text-center">
+                        <i class="fas fa-robot text-4xl text-purple-500 mb-4"></i>
+                        <h4 class="text-lg font-bold">AI Integration</h4>
+                    </div>
+                    <div class="skill-card rounded-lg p-6 text-center">
+                        <i class="fab fa-wordpress text-4xl text-blue-600 mb-4"></i>
+                        <h4 class="text-lg font-bold">WordPress</h4>
+                    </div>
+                    <div class="skill-card rounded-lg p-6 text-center">
+                        <i class="fab fa-shopify text-4xl text-green-600 mb-4"></i>
+                        <h4 class="text-lg font-bold">E-commerce</h4>
+                    </div>
+                    <div class="skill-card rounded-lg p-6 text-center">
+                        <i class="fab fa-git-alt text-4xl text-red-600 mb-4"></i>
+                        <h4 class="text-lg font-bold">Git & GitHub</h4>
+                    </div>
+                    <div class="skill-card rounded-lg p-6 text-center">
+                        <i class="fas fa-link text-4xl text-yellow-600 mb-4"></i>
+                        <h4 class="text-lg font-bold">LangChain</h4>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Legal & Compliance -->
+            <div class="mb-16">
+                <h3 class="text-2xl font-bold mb-8 text-center text-gradient">Legal & Compliance</h3>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="skill-card rounded-lg p-6 text-center">
+                        <i class="fas fa-shield-alt text-4xl text-blue-400 mb-4"></i>
+                        <h4 class="text-lg font-bold">GDPR Compliance</h4>
+                    </div>
+                    <div class="skill-card rounded-lg p-6 text-center">
+                        <i class="fas fa-network-wired text-4xl text-orange-400 mb-4"></i>
+                        <h4 class="text-lg font-bold">NIS2 & DSA</h4>
+                    </div>
+                    <div class="skill-card rounded-lg p-6 text-center">
+                        <i class="fas fa-cubes text-4xl text-purple-400 mb-4"></i>
+                        <h4 class="text-lg font-bold">Smart Contracts</h4>
+                    </div>
+                    <div class="skill-card rounded-lg p-6 text-center">
+                        <i class="fas fa-file-contract text-4xl text-green-400 mb-4"></i>
+                        <h4 class="text-lg font-bold">SaaS Licensing</h4>
+                    </div>
+                    <div class="skill-card rounded-lg p-6 text-center">
+                        <i class="fas fa-gavel text-4xl text-yellow-400 mb-4"></i>
+                        <h4 class="text-lg font-bold">Legal Tech Advisory</h4>
+                    </div>
+                    <div class="skill-card rounded-lg p-6 text-center">
+                        <i class="fas fa-lightbulb text-4xl text-pink-400 mb-4"></i>
+                        <h4 class="text-lg font-bold">Digital Property Law</h4>
+                    </div>
+                    <div class="skill-card rounded-lg p-6 text-center">
+                        <i class="fas fa-coins text-4xl text-yellow-600 mb-4"></i>
+                        <h4 class="text-lg font-bold">Blockchain Consulting</h4>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Soft Skills -->
+            <div class="mb-16">
+                <h3 class="text-2xl font-bold mb-8 text-center text-gradient">Soft Skills</h3>
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="skill-card rounded-lg p-6 text-center">
+                        <i class="fas fa-comments text-4xl text-green-400 mb-4"></i>
+                        <h4 class="text-lg font-bold">Cross-domain Communication</h4>
+                    </div>
+                    <div class="skill-card rounded-lg p-6 text-center">
+                        <i class="fas fa-search text-4xl text-blue-400 mb-4"></i>
+                        <h4 class="text-lg font-bold">Analytical Problem-solving</h4>
+                    </div>
+                    <div class="skill-card rounded-lg p-6 text-center">
+                        <i class="fas fa-rocket text-4xl text-purple-400 mb-4"></i>
+                        <h4 class="text-lg font-bold">Agile Project Delivery</h4>
+                    </div>
+                    <div class="skill-card rounded-lg p-6 text-center">
+                        <i class="fas fa-handshake text-4xl text-orange-400 mb-4"></i>
+                        <h4 class="text-lg font-bold">Strategic Negotiation</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. PROJECTS SECTION -->
+    <section id="projects" class="py-20 relative">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold mb-4">My Works</h2>
+                <div class="section-divider"></div>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="project-card rounded-lg overflow-hidden">
+                    <div class="p-6">
+                        <div class="text-center mb-4">
+                            <i class="fas fa-umbrella-beach text-4xl text-blue-400 mb-4"></i>
+                            <h3 class="text-xl font-bold mb-2">Solmaris Seaside</h3>
+                            <p class="text-gray-400">Luxury BnB booking platform with elegant design</p>
+                        </div>
+                        <div class="flex justify-center space-x-4 mt-6">
+                            <a href="https://solmariseaside.it/" target="_blank" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">
+                                <i class="fas fa-external-link-alt mr-2"></i>Live
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="project-card rounded-lg overflow-hidden">
+                    <div class="p-6">
+                        <div class="text-center mb-4">
+                            <i class="fas fa-gamepad text-4xl text-green-400 mb-4"></i>
+                            <h3 class="text-xl font-bold mb-2">Apulian Pixel</h3>
+                            <p class="text-gray-400">Gaming e-commerce platform with retro aesthetics</p>
+                        </div>
+                        <div class="flex justify-center space-x-4 mt-6">
+                            <a href="https://apulianpixel.it/" target="_blank" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors">
+                                <i class="fas fa-external-link-alt mr-2"></i>Live
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="project-card rounded-lg overflow-hidden">
+                    <div class="p-6">
+                        <div class="text-center mb-4">
+                            <i class="fas fa-credit-card text-4xl text-purple-400 mb-4"></i>
+                            <h3 class="text-xl font-bold mb-2">Salentocards</h3>
+                            <p class="text-gray-400">TCG collectibles marketplace and trading platform</p>
+                        </div>
+                        <div class="flex justify-center space-x-4 mt-6">
+                            <a href="https://salentocards.it/" target="_blank" class="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition-colors">
+                                <i class="fas fa-external-link-alt mr-2"></i>Live
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="project-card rounded-lg overflow-hidden">
+                    <div class="p-6">
+                        <div class="text-center mb-4">
+                            <i class="fas fa-building text-4xl text-orange-400 mb-4"></i>
+                            <h3 class="text-xl font-bold mb-2">Tre Lune Tech</h3>
+                            <p class="text-gray-400">Corporate digital consultancy and transformation</p>
+                        </div>
+                        <div class="flex justify-center space-x-4 mt-6">
+                            <a href="https://trelune.tech/" target="_blank" class="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors">
+                                <i class="fas fa-external-link-alt mr-2"></i>Live
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="project-card rounded-lg overflow-hidden">
+                    <div class="p-6">
+                        <div class="text-center mb-4">
+                            <i class="fab fa-github text-4xl text-gray-300 mb-4"></i>
+                            <h3 class="text-xl font-bold mb-2">GitHub Repository</h3>
+                            <p class="text-gray-400">Collection of my coding projects and contributions</p>
+                        </div>
+                        <div class="flex justify-center space-x-4 mt-6">
+                            <a href="https://github.com/hache183" target="_blank" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
+                                <i class="fab fa-github mr-2"></i>View Code
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="project-card rounded-lg overflow-hidden">
+                    <div class="p-6">
+                        <div class="text-center mb-4">
+                            <i class="fas fa-globe text-4xl text-blue-400 mb-4"></i>
+                            <h3 class="text-xl font-bold mb-2">Personal Website</h3>
+                            <p class="text-gray-400">My personal portfolio and blog</p>
+                        </div>
+                        <div class="flex justify-center space-x-4 mt-6">
+                            <a href="https://epicoco.me" target="_blank" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">
+                                <i class="fas fa-external-link-alt mr-2"></i>Visit
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. CONTACT SECTION -->
+    <section id="contact" class="py-20 relative">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold mb-4">Let's Work Together</h2>
+                <div class="section-divider"></div>
+                <p class="text-xl text-gray-400 max-w-2xl mx-auto">
+                    Ready to bring your ideas to life? Let's discuss your next project.
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-12">
+                <div class="space-y-8">
+                    <div class="glass-effect rounded-lg p-6">
+                        <h3 class="text-2xl font-bold mb-6 text-gradient">Get In Touch</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center space-x-4">
+                                <i class="fas fa-envelope text-green-400"></i>
+                                <span>marcoepicoco2@gmail.com</span>
+                            </div>
+                            <div class="flex items-center space-x-4">
+                                <i class="fas fa-globe text-blue-400"></i>
+                                <span>epicoco.me</span>
+                            </div>
+                            <div class="flex items-center space-x-4">
+                                <i class="fas fa-map-marker-alt text-purple-400"></i>
+                                <span>Brindisi, Puglia, Italy</span>
+                            </div>
+                            <div class="flex items-center space-x-4">
+                                <i class="fas fa-birthday-cake text-pink-400"></i>
+                                <span>May 12, 1998</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Business Information Section -->
+                        <div class="business-info">
+                            <h4 class="text-lg font-bold mb-4 flex items-center">
+                                <i class="fas fa-briefcase text-green-400 mr-2"></i>
+                                Business Information
+                            </h4>
+                            <div class="space-y-3 text-sm">
+                                <div class="flex items-center space-x-3">
+                                    <i class="fas fa-id-card text-blue-400"></i>
+                                    <span>VAT Number: IT02345678901</span>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <i class="fas fa-building text-purple-400"></i>
+                                    <span>Legal Structure: Individual Freelancer (Partita IVA)</span>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <i class="fas fa-file-invoice text-orange-400"></i>
+                                    <span>Tax Code: PCCMRC98E12B180X</span>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <i class="fas fa-handshake text-green-400"></i>
+                                    <span>Available for: Contract Work, Consulting, Partnerships</span>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-4">
+                                <h5 class="text-sm font-semibold mb-2 text-gray-300">Services Available:</h5>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="business-badge">
+                                        <i class="fas fa-code mr-1"></i>
+                                        Full Stack Development
+                                    </span>
+                                    <span class="business-badge">
+                                        <i class="fas fa-gavel mr-1"></i>
+                                        Legal Tech Consulting
+                                    </span>
+                                    <span class="business-badge">
+                                        <i class="fas fa-robot mr-1"></i>
+                                        AI Integration
+                                    </span>
+                                    <span class="business-badge">
+                                        <i class="fas fa-shield-alt mr-1"></i>
+                                        Compliance Advisory
+                                    </span>
+                                    <span class="business-badge">
+                                        <i class="fas fa-coins mr-1"></i>
+                                        Blockchain Solutions
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-8">
+                            <h4 class="text-lg font-bold mb-4">Follow Me</h4>
+                            <div class="flex space-x-4">
+                                <a href="https://github.com/hache183" target="_blank" class="w-12 h-12 rounded-full bg-gray-700 flex items-center justify-center hover:bg-gray-600 transition-colors">
+                                    <i class="fab fa-github"></i>
+                                </a>
+                                <a href="#" class="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center hover:bg-blue-700 transition-colors">
+                                    <i class="fab fa-linkedin"></i>
+                                </a>
+                                <a href="#" class="w-12 h-12 rounded-full bg-blue-400 flex items-center justify-center hover:bg-blue-500 transition-colors">
+                                    <i class="fab fa-twitter"></i>
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-8">
+                            <h4 class="text-lg font-bold mb-4">Download CV</h4>
+                            <div class="flex space-x-4">
+                                <a href="media/Marco-Epicoco-CV1.pdf" download class="bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition-colors">
+                                    <i class="fas fa-download mr-2"></i>CV ITA
+                                </a>
+                                <a href="media/Marco-Epicoco-CV2.pdf" download class="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors">
+                                    <i class="fas fa-download mr-2"></i>CV ENG
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="glass-effect rounded-lg p-8">
+                    <form id="contactForm" class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Name</label>
+                            <input type="text" name="name" class="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Email</label>
+                            <input type="email" name="email" class="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Subject</label>
+                            <input type="text" name="subject" class="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Message</label>
+                            <textarea name="message" rows="5" class="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white" required></textarea>
+                        </div>
+                        <button type="submit" class="w-full bg-gradient-to-r from-green-400 to-blue-500 text-white py-3 rounded-lg hover:scale-105 transition-transform">
+                            <i class="fas fa-paper-plane mr-2"></i>Send Message
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="py-8 border-t border-gray-800">
+        <div class="container mx-auto px-6 text-center">
+            <p class="text-gray-400">
+                © 2025 Marco Alessio Epicoco. Made with ❤️ and lots of ☕
+            </p>
+            <div class="mt-4">
+                <div class="inline-flex items-center space-x-2 text-sm text-gray-500">
+                    <span>Built with</span>
+                    <i class="fab fa-html5 text-orange-500"></i>
+                    <i class="fab fa-css3-alt text-blue-500"></i>
+                    <i class="fab fa-js-square text-yellow-500"></i>
+                    <span>& Three.js</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // Register GSAP ScrollTrigger
+        gsap.registerPlugin(ScrollTrigger);
+        
+        // Global variables
+        let scene, camera, renderer;
+        let mouseX = 0, mouseY = 0;
+        let isLightTheme = false;
+        
+        // Custom cursor
+        const cursor = document.querySelector('.custom-cursor');
+        
+        // Cursor movement
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            
+            if (cursor) {
+                // Use direct style manipulation for maximum responsiveness
+                cursor.style.transform = `translate3d(${mouseX - 10}px, ${mouseY - 10}px, 0)`;
+            }
+        });
+        
+        // Initialize Three.js scene
+        function initThreeJS() {
+            const container = document.createElement('div');
+            container.style.position = 'fixed';
+            container.style.top = '0';
+            container.style.left = '0';
+            container.style.width = '100%';
+            container.style.height = '100%';
+            container.style.pointerEvents = 'none';
+            container.style.zIndex = '1';
+            document.body.appendChild(container);
+            
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            renderer = new THREE.WebGLRenderer({ alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            container.appendChild(renderer.domElement);
+            
+            // Create particles
+            const geometry = new THREE.BufferGeometry();
+            const positions = [];
+            const colors = [];
+            
+            for (let i = 0; i < 1000; i++) {
+                positions.push(
+                    (Math.random() - 0.5) * 2000,
+                    (Math.random() - 0.5) * 2000,
+                    (Math.random() - 0.5) * 2000
+                );
+                
+                colors.push(
+                    Math.random(),
+                    Math.random() * 0.5 + 0.5,
+                    1
+                );
+            }
+            
+            geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+            geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+            
+            const material = new THREE.PointsMaterial({
+                size: 2,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.6
+            });
+            
+            const points = new THREE.Points(geometry, material);
+            scene.add(points);
+            
+            camera.position.z = 1000;
+            
+            // Animation loop
+            function animate() {
+                requestAnimationFrame(animate);
+                
+                points.rotation.x += 0.0005;
+                points.rotation.y += 0.001;
+                
+                // Mouse interaction
+                camera.position.x += (mouseX * 0.01 - camera.position.x) * 0.05;
+                camera.position.y += (mouseY * -0.01 - camera.position.y) * 0.05;
+                camera.lookAt(scene.position);
+                
+                renderer.render(scene, camera);
+            }
+            
+            animate();
+        }
+        
+        // Hero animations
+        function initHeroAnimations() {
+            const tl = gsap.timeline({ delay: 0.5 });
+            
+            tl.from('#heroTitle', {
+                y: 100,
+                opacity: 0,
+                duration: 1,
+                ease: 'power3.out'
+            })
+            .from('#heroSubtitle', {
+                y: 50,
+                opacity: 0,
+                duration: 0.8,
+                ease: 'power2.out'
+            }, '-=0.5')
+            .from('#heroDescription', {
+                y: 30,
+                opacity: 0,
+                duration: 0.6,
+                ease: 'power2.out'
+            }, '-=0.3')
+            .from('#heroStats > div', {
+                y: 30,
+                opacity: 0,
+                duration: 0.6,
+                stagger: 0.2,
+                ease: 'back.out(1.7)'
+            }, '-=0.3')
+            .from('#heroButton', {
+                y: 30,
+                opacity: 0,
+                duration: 0.6,
+                ease: 'power2.out'
+            }, '-=0.2');
+        }
+        
+        // Scroll animations
+        function initScrollAnimations() {
+            // Fade in sections in the correct order
+            const sections = ['#about', '#skills', '#projects', '#contact'];
+            
+            sections.forEach(sectionId => {
+                const section = document.querySelector(sectionId);
+                if (section) {
+                    gsap.from(section.children, {
+                        y: 50,
+                        opacity: 0,
+                        duration: 1,
+                        stagger: 0.2,
+                        scrollTrigger: {
+                            trigger: section,
+                            start: 'top 80%',
+                            end: 'bottom 20%',
+                            toggleActions: 'play none none reverse'
+                        }
+                    });
+                }
+            });
+            
+            // Skill cards hover effect
+            gsap.utils.toArray('.skill-card').forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    gsap.to(card, {
+                        scale: 1.05,
+                        duration: 0.3,
+                        ease: 'power2.out'
+                    });
+                });
+                
+                card.addEventListener('mouseleave', () => {
+                    gsap.to(card, {
+                        scale: 1,
+                        duration: 0.3,
+                        ease: 'power2.out'
+                    });
+                });
+            });
+        }
+        
+        // Theme toggle
+        function initThemeToggle() {
+            const themeToggle = document.getElementById('themeToggle');
+            const icon = themeToggle.querySelector('i');
+            
+            themeToggle.addEventListener('click', () => {
+                isLightTheme = !isLightTheme;
+                
+                if (isLightTheme) {
+                    document.body.classList.add('light-theme');
+                    icon.className = 'fas fa-sun';
+                } else {
+                    document.body.classList.remove('light-theme');
+                    icon.className = 'fas fa-moon';
+                }
+                
+                // Animate the toggle
+                gsap.to(themeToggle, {
+                    rotation: 360,
+                    duration: 0.5,
+                    ease: 'power2.out'
+                });
+            });
+        }
+        
+        // Mobile menu
+        function initMobileMenu() {
+            const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+            let mobileMenu = null;
+            
+            mobileMenuToggle.addEventListener('click', () => {
+                if (!mobileMenu) {
+                    // Create mobile menu
+                    mobileMenu = document.createElement('div');
+                    mobileMenu.className = 'fixed top-0 left-0 w-full h-full bg-black/90 backdrop-blur-lg z-40 flex items-center justify-center';
+                    mobileMenu.innerHTML = `
+                        <div class="text-center space-y-8">
+                            <a href="#hero" class="block text-2xl text-white hover:text-green-400 transition-colors">Home</a>
+                            <a href="#about" class="block text-2xl text-white hover:text-green-400 transition-colors">About</a>
+                            <a href="#skills" class="block text-2xl text-white hover:text-green-400 transition-colors">Skills</a>
+                            <a href="#projects" class="block text-2xl text-white hover:text-green-400 transition-colors">Projects</a>
+                            <a href="#contact" class="block text-2xl text-white hover:text-green-400 transition-colors">Contact</a>
+                        </div>
+                    `;
+                    
+                    // Add click listeners to close menu
+                    mobileMenu.querySelectorAll('a').forEach(link => {
+                        link.addEventListener('click', () => {
+                            closeMobileMenu();
+                        });
+                    });
+                    
+                    document.body.appendChild(mobileMenu);
+                    
+                    // Animate in
+                    gsap.fromTo(mobileMenu, 
+                        { opacity: 0 },
+                        { opacity: 1, duration: 0.3 }
+                    );
+                    
+                    // Change icon
+                    mobileMenuToggle.innerHTML = '<i class="fas fa-times"></i>';
+                } else {
+                    closeMobileMenu();
+                }
+            });
+            
+            function closeMobileMenu() {
+                if (mobileMenu) {
+                    gsap.to(mobileMenu, {
+                        opacity: 0,
+                        duration: 0.3,
+                        onComplete: () => {
+                            document.body.removeChild(mobileMenu);
+                            mobileMenu = null;
+                        }
+                    });
+                    
+                    // Change icon back
+                    mobileMenuToggle.innerHTML = '<i class="fas fa-bars"></i>';
+                }
+            }
+        }
+        
+        // Smooth scrolling
+        function initSmoothScrolling() {
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        }
+        
+        // Contact form
+        function initContactForm() {
+            const form = document.getElementById('contactForm');
+            
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                // Show success message
+                const successMsg = document.createElement('div');
+                successMsg.className = 'text-center text-green-400 text-xl font-bold';
+                successMsg.innerHTML = `
+                    <i class="fas fa-check-circle text-4xl mb-4"></i>
+                    <div>Message sent successfully!</div>
+                    <div class="text-sm text-gray-400 mt-2">I'll get back to you soon.</div>
+                `;
+                
+                form.parentNode.replaceChild(successMsg, form);
+                
+                gsap.fromTo(successMsg,
+                    { scale: 0.5, opacity: 0 },
+                    { scale: 1, opacity: 1, duration: 0.5, ease: 'back.out(1.7)' }
+                );
+            });
+        }
+        
+        // Resize handler
+        function handleResize() {
+            if (renderer) {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            }
+        }
+        
+        // Initialize everything
+        function init() {
+            initThreeJS();
+            initHeroAnimations();
+            initScrollAnimations();
+            initThemeToggle();
+            initMobileMenu();
+            initSmoothScrolling();
+            initContactForm();
+            
+            window.addEventListener('resize', handleResize);
+        }
+        
+        // Start when DOM is ready
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
